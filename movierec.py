@@ -37,17 +37,18 @@ def separate_genres(df):
     for index, row in df.iterrows():
         movie = row['Title']
         genres_str = row['Genre']
-        combined_features = row['combined_features'] # getting the combined_features from the current row
+        combined_features = row['combined_features']
         if isinstance(genres_str, str):
-            for genre in genres_str.split(', '):
+            genres = genres_str.split(', ')  # spliting the genre string into a list
+            for genre in genres:  # iterating through the individual genres
                 new_data.append({
                     'Title': movie,
-                    'Genre': genre,
+                    'Genre': genre,  # and storing them separately
                     'Description': row['Description'],
                     'Actors': row['Actors'],
                     'Director': row['Director'],
                     'Year': row['Year'],
-                    'combined_features': combined_features  # including the combined_features in the new row
+                    'combined_features': combined_features
                 })
     return pd.DataFrame(new_data)
 
@@ -56,10 +57,11 @@ def filter_movies(mdata, selected_genre, selected_years):
     filtered_data = mdata.copy()
 
     if selected_genre != "All":
-        filtered_data = filtered_data[filtered_data['Genre'] == selected_genre] # Exact match now
+        filtered_data = filtered_data[filtered_data['Genre'] == selected_genre]
 
-    if selected_years:
-        filtered_data = filtered_data[filtered_data['Year'].isin(selected_years)]
+    if "All Years" not in selected_years and selected_years:
+        selected_years_int = [int(year) for year in selected_years]
+        filtered_data = filtered_data[filtered_data['Year'].isin(selected_years_int)]
 
     return filtered_data
 
@@ -78,7 +80,7 @@ def recommend_movies_filtered(movie_title, filtered_similarity_matrix, filtered_
 def recommend_movies_original(movie_title, similarity_matrix, mdata, top_n=10): 
     return recommend_movies(movie_title, similarity_matrix, mdata, top_n)
 
-def recommend_movies(movie_title, similarity_matrix, mdata, top_n=10):  # Correct definition
+def recommend_movies(movie_title, similarity_matrix, mdata, top_n=10):
     try: # i use try and except for error handling, just in case ;)
         movie_index = mdata[mdata['Title'] == movie_title].index[0] # here i find the index of the movie in the df that matches the input title, through a boolean series, where True means that the movie titles match.
         similar_movies = list(enumerate(similarity_matrix[movie_index])) # here i get back the similarity scores for the movie at movie_index, then finally create a list with them.
@@ -94,4 +96,4 @@ def recommend_movies(movie_title, similarity_matrix, mdata, top_n=10):  # Correc
 
         return recommended_movies
     except IndexError:
-        return ["Movie not found or try with capital letter, if not then is definetly not in my cinema :(."]
+        return ["Movie not found or try with capital letter or incorrect year, if not then is definetly not in my cinema :(."]

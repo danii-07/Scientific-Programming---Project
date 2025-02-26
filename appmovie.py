@@ -17,12 +17,12 @@ unique_genres_list = ['Action', 'Adventure', 'Sci-Fi', 'Horror', 'Thriller', 'An
 
 # genre selection with a drop down
 
-selected_genre = st.selectbox("Select the genre of the movie you are looking for:", ["All"] + unique_genres_list, key="genre_selectbox")
+selected_genre = st.selectbox("Select the genre of the movie you typed or if you don't know pick all:", ["All"] + unique_genres_list, key="genre_selectbox")
 
-# year selection with checkboxes
+# year selection with checkboxes 
 
-years = sorted(mdata['Year'].unique())
-selected_years = st.multiselect("Select the year in which the movie you are looking for was released:", years, key="year_multiselect")
+years = ["All Years"] + sorted(mdata['Year'].unique().tolist()) 
+selected_years = st.multiselect("From which year is the movie you typed or if you don't know pick all:", years, key="year_multiselect")
 
 # filtering the data
 
